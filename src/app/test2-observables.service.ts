@@ -13,18 +13,18 @@ import {
 @Injectable({
   providedIn: 'root',
 })
-export class TestObservablesService {
+export class TestObservablesService2 {
   constructor(private http: HttpClient) {}
   public result = {
-    pokemons: [],
+    character: [],
   };
   public subjectPeople = new ReplaySubject<any[]>();
 
   fetchOwnAccountsService() {
-    return this.http.get<any>(' https://pokeapi.co/api/v2/pokemons ').pipe(
-      map((pokemons) => {
-        console.log('getting into the pokemon', pokemons);
-        return pokemons.results;
+    return this.http.get<any>('https://rickandmortyapi.com/api/character').pipe(
+      map((character) => {
+        console.log('getting Rik and Morty', character);
+        return character.results;
       }),
       catchError(this.handleError)
     );
@@ -33,36 +33,37 @@ export class TestObservablesService {
   handleError(error) {
     let errorMessage = '';
     if (error.error instanceof ErrorEvent) {
+      // client-side error
       errorMessage = `Error: ${error.error.message}`;
     } else {
+      // server-side error
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
-    window.alert(errorMessage);
+    // window.alert(errorMessage);
     return throwError(errorMessage);
   }
-
 
   getPeople() {
     return this.subjectPeople;
   }
 
   updatePeople(parametro: string) {
-    this.result.pokemons[0].name = parametro;
-    this.subjectPeople.next(this.result.pokemons);
+    this.result.character[0].name = parametro;
+    this.subjectPeople.next(this.result.character);
   }
 
   setPeople() {
-    if (this.result.pokemons.length === 0) {
+    if (this.result.character.length === 0) {
       this.fetchOwnAccountsService().subscribe((res) => {
         console.log('se hizo peticion');
 
-        this.result.pokemons = res;
-        this.subjectPeople.next(this.result.pokemons);
+        this.result.character = res;
+        this.subjectPeople.next(this.result.character);
       });
     } else {
       console.log('sin hacer peticion');
 
-      this.subjectPeople.next(this.result.pokemons);
+      this.subjectPeople.next(this.result.character);
     }
   }
 }
