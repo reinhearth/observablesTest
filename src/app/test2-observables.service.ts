@@ -17,6 +17,7 @@ export class TestObservablesService2 {
   constructor(private http: HttpClient) {}
   public result = {
     character: [],
+    status: true
   };
   public subjectPeople = new ReplaySubject<any[]>();
 
@@ -26,22 +27,16 @@ export class TestObservablesService2 {
         console.log('getting Rik and Morty', character);
         return character.results;
       }),
-      catchError(this.handleError)
+      catchError(error => {
+        this.result.status = false;
+        return of(
+          {mensaje: error.error,
+          key: error.status}
+          );
+      })
     );
   }
 
-  handleError(error) {
-    let errorMessage = '';
-    if (error.error instanceof ErrorEvent) {
-      // client-side error
-      errorMessage = `Error: ${error.error.message}`;
-    } else {
-      // server-side error
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    // window.alert(errorMessage);
-    return throwError(errorMessage);
-  }
 
   getPeople() {
     return this.subjectPeople;
